@@ -8,6 +8,16 @@
 </head>
 <body>
     <div class="main-content">
+        <!-- Header отображается только если выбран чат -->
+        {% if current_chat_id %}
+        <header class="chat-header">
+            <h1 class="chat-title-header">
+                {% for chat in chats if chat.id == current_chat_id|int %}
+                    {{ chat.title }}
+                {% endfor %}
+            </h1>
+        </header>
+        {% endif %}
         <div class="chat-container" id="chatContainer">
             {% if not messages %}
             <div class="welcome-screen" id="welcomeScreen">
@@ -25,14 +35,22 @@
             </div>
             {% else %}
             {% for message in messages %}
-<div class="message {% if message.is_user %}user-message{% else %}assistant-message{% endif %}" data-message-id="{{ message.id }}">
-    <div class="message-content">{{ message.content }}</div>
-    <div class="timestamp">{{ message.timestamp.strftime('%H:%M') }}</div>
-</div>
-{% if not message.is_user %}
-<div class="like-container" id="like-container-{{ message.id }}"></div>
-{% endif %}
-{% endfor %}
+            <div class="message {% if message.is_user %}user-message{% else %}assistant-message{% endif %}" data-message-id="{{ message.id }}">
+                <div class="message-content">{{ message.content|replace('\n', '<br>')|safe }}</div>
+                <div class="timestamp">{{ message.timestamp.strftime('%H:%M') }}</div>
+            </div>
+            {% if not message.is_user %}
+            <div class="like-container" id="like-container-{{ message.id }}">
+                <button class="copy-btn" title="Скопировать">
+                    {% include 'svvg2.html' %}
+                </button>
+                <button class="refresh-btn" title="Перефразировать">
+                    {% include 'svggg.html' %}
+{#                   16.89C5.39 16.7 5.09 16.5 4.8 16.28C4.52 16.05 4.25 15.81 3.99 15.55C3.74 15.29 3.5 15.02 3.29 14.73C3.07 14.44 2.88 14.13 2.7 13.82L4.15 13.05C4.32 13.35 4.51 13.64 4.72 13.91C4.93 14.18 5.17 14.43 5.42 14.66C5.67 14.9 5.94 15.11 6.23 15.3C6.52 15.49 6.83 15.66 7.14 15.81C7.46 15.95 7.78 16.07 8.12 16.16C8.45 16.25 8.8 16.32 9.14 16.36C9.49 16.39 9.83 16.4 10.18 16.39C10.53 16.37 10.87 16.33 11.22 16.26C11.56 16.19 11.89 16.09 12.21 15.97C12.54 15.84 12.85 15.7 13.15 15.53C13.45 15.35 13.74 15.16 14.01 14.94C14.28 14.72 14.53 14.49 14.76 14.23C14.99 13.97 15.2 13.7 15.38 13.41C15.57 13.12 15.73 12.82 15.87 12.5C16 12.19 16.11 11.87 16.2 11.53C16.28 11.2 16.34 10.87 16.36 10.52C16.37 10.42 16.4 10.33 16.44 10.24C16.48 10.15 16.54 10.07 16.61 10C16.69 9.93 16.77 9.87 16.86 9.84C16.96 9.8 17.05 9.77 17.16 9.77C17.27 9.77 17.38 9.79 17.49 9.83C17.6 9.87 17.7 9.94 17.78 10.02C17.86 10.1 17.92 10.2 17.96 10.3C18 10.41 18.01 10.52 18 10.64C17.98 10.89 17.95 11.13 17.91 11.38C17.86 11.62 17.81 11.87 17.74 12.11C17.68 12.35 17.6 12.58 17.51 12.82C17.42 13.05 17.32 13.28 17.21 13.5C17.1 13.73 16.98 13.95 16.85 14.16C16.71 14.37 16.57 14.58 16.42 14.78C16.27 14.98 16.11 15.17 15.94 15.36C15.77 15.54 15.59 15.72 15.41 15.89C15.22 16.06 15.03 16.22 14.83 16.37C14.63 16.52 14.42 16.66 14.2 16.79C13.99 16.93 13.77 17.05 13.54 17.16C13.31 17.27 13.08 17.37 12.85 17.46C12.61 17.55 12.37 17.63 12.13 17.7C11.88 17.77 11.64 17.83 11.39 17.87C11.14 17.92 10.89 17.96 10.63 17.98C10.38 18 10.13 18.01 9.88 18.01Z" fill="currentColor" fill-opacity="1.000000" fill-rule="nonzero"></path><path id="path" d="M2.85 10.27C2.73 10.28 2.62 10.26 2.51 10.22C2.4 10.17 2.31 10.11 2.23 10.03C2.14 9.95 2.08 9.85 2.04 9.74C2 9.63 1.99 9.52 2 9.41C2.03 8.98 2.1 8.56 2.2 8.15C2.3 7.73 2.43 7.33 2.6 6.94C2.76 6.54 2.96 6.16 3.19 5.8C3.41 5.44 3.67 5.1 3.95 4.77C4.24 4.45 4.54 4.15 4.88 3.88C5.21 3.6 5.56 3.35 5.93 3.13C6.3 2.91 6.69 2.73 7.09 2.57C7.5 2.41 7.91 2.28 8.33 2.19C8.75 2.09 9.18 2.03 9.62 2.01C10.05 1.98 10.48 1.99 10.91 2.03C11.35 2.07 11.77 2.14 12.19 2.25C12.61 2.36 13.02 2.5 13.42 2.67C13.81 2.84 14.19 3.04 14.56 3.28C14.92 3.51 15.27 3.77 15.59 4.05C15.91 4.34 16.21 4.64 16.48 4.98C16.75 5.31 17 5.66 17.21 6.03L15.78 6.83C15.61 6.54 15.42 6.25 15.2 5.99C14.98 5.73 14.74 5.48 14.49 5.25C14.23 5.02 13.96 4.82 13.66 4.63C13.37 4.45 13.07 4.29 12.75 4.15C12.44 4.01 12.11 3.9 11.77 3.82C11.44 3.73 11.1 3.67 10.76 3.64C10.41 3.61 10.07 3.6 9.72 3.62C9.37 3.64 9.03 3.69 8.69 3.77C8.36 3.84 8.03 3.94 7.71 4.07C7.38 4.2 7.08 4.35 6.78 4.52C6.48 4.7 6.2 4.89 5.94 5.11C5.67 5.33 5.43 5.57 5.2 5.83C4.97 6.08 4.77 6.36 4.59 6.65C4.41 6.94 4.25 7.24 4.12 7.55C3.98 7.87 3.88 8.19 3.8 8.52C3.72 8.85 3.66 9.19 3.64 9.53C3.63 9.62 3.6 9.72 3.56 9.81C3.52 9.9 3.46 9.98 3.39 10.05C3.32 10.12 3.23 10.17 3.14 10.21C3.05 10.25 2.95 10.27 2.85 10.27Z" fill="currentColor" fill-opacity="1.000000" fill-rule="nonzero"></path></g></svg>#}
+                </button>
+            </div>
+            {% endif %}
+            {% endfor %}
             {% endif %}
         </div>
         <div class="ocean">
@@ -40,35 +58,36 @@
             <div class="wave"></div>
         </div>
         <div class="input-container">
-    <form method="POST" action="/main" class="input-area" enctype="multipart/form-data">
-        <input type="hidden" name="chat_id" value="{{ current_chat_id|default('new') }}">
-        <button type="button" class="help-input-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
-                <path d="M9.09 9C9.3251 8.33167 9.82115 7.76811 10.4765 7.40913C11.1319 7.05016 11.8997 6.91894 12.6447 7.03871C13.3897 7.15849 14.058 7.52152 14.5295 8.05553C15.001 8.58953 15.2413 9.25724 15.2 9.938C15.2 12 12 13 12 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-        </button>
-        <button type="button" class="attach-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M10 9h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <input type="file" id="fileInput" name="file" accept=".txt" style="display: none;">
-        <textarea name="message" id="userInput" placeholder="Напишите сообщение..." rows="1"></textarea>
-        <button type="submit" class="send-btn" id="sendBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 12L21 12M21 12L13 4M21 12L13 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-    </form>
-</div>
+            <form method="POST" action="/main" class="input-area" enctype="multipart/form-data" id="messageForm">
+                <input type="hidden" name="chat_id" value="{{ current_chat_id|default('new') }}">
+                <button type="button" class="help-input-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M9.09 9C9.3251 8.33167 9.82115 7.76811 10.4765 7.40913C11.1319 7.05016 11.8997 6.91894 12.6447 7.03871C13.3897 7.15849 14.058 7.52152 14.5295 8.05553C15.001 8.58953 15.2413 9.25724 15.2 9.938C15.2 12 12 13 12 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button type="button" class="attach-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M10 9h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <input type="file" id="fileInput" name="file" accept=".txt" style="display: none;">
+                <textarea name="message" id="userInput" placeholder="Напишите сообщение..." rows="1"></textarea>
+                <button type="submit" class="send-btn" id="sendBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 12L21 12M21 12L13 4M21 12L13 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
     </div>
 
+    <!-- Sidebar без изменений -->
     <div class="sidebar">
         <div class="logo">
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 1024.000000 1024.000000" preserveAspectRatio="xMidYMid meet">
@@ -126,21 +145,20 @@
         </div>
     </div>
     <div class="modal" id="helpModal">
-    <div class="modal-content">
-        <h3>Инструкция по использованию</h3>
-        <p class="help-intro">Shark AI — ваш умный помощник. Вот что он умеет:</p>
-        <ul class="help-list">
-            <li>Отвечать на вопросы</li>
-            <li>Анализировать текст из файлов</li>
-            <li>Сохранять историю чатов</li>
-        </ul>
-        <p class="help-action">Введите сообщение или загрузите .txt файл и нажмите <strong>"Отправить"</strong>!</p>
-        <div class="modal-buttons">
-            <button class="modal-btn close-btn" id="closeHelpBtn">Закрыть</button>
+        <div class="modal-content">
+            <h3>Инструкция по использованию</h3>
+            <p class="help-intro">Shark AI — ваш умный помощник. Вот что он умеет:</p>
+            <ul class="help-list">
+                <li>Отвечать на вопросы</li>
+                <li>Анализировать текст из файлов</li>
+                <li>Сохранять историю чатов</li>
+            </ul>
+            <p class="help-action">Введите сообщение или загрузите .txt файл и нажмите <strong>"Отправить"</strong>!</p>
+            <div class="modal-buttons">
+                <button class="modal-btn close-btn" id="closeHelpBtn">Закрыть</button>
+            </div>
         </div>
     </div>
-</div>
     <script src="../static/js/index.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92d9cb7fdc7add25',t:'MTc0NDE5OTUxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

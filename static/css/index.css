@@ -10,6 +10,7 @@
     --assistant-bg: #dbeafe;
     --user-bg: #bfdbfe;
     --like-color: #2563eb;
+    --header-color: #3b82f6; /* Новый цвет для header */
 }
 
 * {
@@ -37,7 +38,7 @@ body {
     position: fixed;
     top: 0;
     bottom: 0;
-    right: 0; /* Меняем left на right */
+    right: 0;
     z-index: 10;
     overflow-y: auto;
 }
@@ -66,9 +67,11 @@ body {
     z-index: 1;
     transition: background-color 0.2s;
 }
-.profile-link{
+
+.profile-link {
     z-index: 1;
 }
+
 .new-chat-btn:hover {
     background-color: var(--primary-hover);
 }
@@ -130,7 +133,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    margin-right: 300px; /* Меняем margin-left на margin-right */
+    margin-right: 300px;
     position: relative;
 }
 
@@ -143,6 +146,7 @@ body {
     gap: 12px;
     position: relative;
     z-index: 1;
+    padding-top: 20px; /* Добавляем отступ сверху в 20px */
 }
 
 .welcome-screen {
@@ -236,18 +240,16 @@ textarea {
     font-size: 15px;
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    min-height: 60px;
-    max-height: 200px;
+    height: 60px; /* Фиксированная высота */
+    min-height: 60px; /* Убираем возможность изменения */
+    max-height: 60px; /* Убираем возможность изменения */
     line-height: 1.5;
     transition: border-color 0.2s;
-    display: flex;
-    align-items: center;
+    overflow-y: auto; /* Добавляем скролл внутри, если текст большой */
 }
 
 textarea::placeholder {
     line-height: 1.5;
-    display: flex;
-    align-items: center;
 }
 
 textarea:focus {
@@ -285,21 +287,23 @@ textarea:focus {
 }
 
 .user-message {
-    align-self: flex-start; /* Меняем flex-end на flex-start */
+    align-self: flex-end;
     background-color: var(--user-bg);
     border: 1px solid var(--border-color);
-    margin-left: 20px; /* Меняем margin-right на margin-left */
+    margin-right: 20px;
 }
 
 .assistant-message {
-    align-self: flex-end; /* Меняем flex-start на flex-end */
+    align-self: flex-start;
     background-color: var(--assistant-bg);
-    margin-right: 20px; /* Меняем margin-left на margin-right */
+    margin-left: 20px;
 }
 
 .message-content {
     margin-bottom: 8px;
     line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .timestamp {
@@ -311,32 +315,29 @@ textarea:focus {
 
 .like-container {
     display: flex;
-    justify-content: flex-end; /* Меняем flex-start на flex-end */
+    justify-content: flex-start;
     gap: 8px;
     margin-top: 4px;
-    margin-right: 40px; /* Меняем margin-left на margin-right */
+    margin-left: 40px;
     margin-bottom: 12px;
 }
 
-.like-btn, .refresh-btn, .copy-btn {
+.copy-btn, .refresh-btn {
     background-color: transparent;
     border: none;
     cursor: pointer;
     padding: 4px;
     transition: transform 0.2s;
+    /*width: 3vw;*/
+    /*height: 3vh;*/
 }
 
-.like-btn:hover, .refresh-btn:hover, .copy-btn:hover {
+.copy-btn:hover, .refresh-btn:hover {
     transform: scale(1.1);
 }
 
-.like-btn svg path, .refresh-btn svg path, .copy-btn svg path {
-    stroke: var(--primary-color);
-}
-
-.like-btn.active svg path, .refresh-btn.active svg path, .copy-btn.active svg path {
-    stroke: var(--primary-color);
-    fill: var(--primary-color);
+.copy-btn svg path, .refresh-btn svg path {
+    stroke: var(--primary-color); /* Цвет иконок изменен на синий */
 }
 
 @keyframes fadeIn {
@@ -351,7 +352,7 @@ textarea:focus {
 .bubbles {
     position: absolute;
     top: 0;
-    left: 0; /* Меняем right на left */
+    left: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -369,7 +370,7 @@ textarea:focus {
 }
 
 .bubble:nth-child(1) {
-    left: 10%; /* Меняем right на left */
+    left: 10%;
     animation-duration: 6s;
     animation-delay: 0s;
 }
@@ -424,7 +425,6 @@ textarea:focus {
     align-items: center;
 }
 
-/* Стили для модального окна */
 .modal-content {
     background-color: #fff;
     padding: 20px;
@@ -435,7 +435,7 @@ textarea:focus {
 
 .modal-content h3 {
     margin: 0 0 15px 0;
-    color: var(--text-color); /* #1e3a8a */
+    color: var(--text-color);
     font-size: 20px;
     font-weight: 600;
 }
@@ -454,14 +454,16 @@ textarea:focus {
     justify-content: flex-end;
     gap: 10px;
 }
+
 .close-btn {
-    background-color: var(--primary-color); /* #2563eb */
+    background-color: var(--primary-color);
     color: white;
 }
+
 .close-btn:hover {
-    background-color: var(--primary-hover); /* #1d4ed8 */
+    background-color: var(--primary-hover);
 }
-/* Обновляем стили кнопки */
+
 .modal-btn {
     padding: 8px 16px;
     border: none;
@@ -469,35 +471,37 @@ textarea:focus {
     cursor: pointer;
     transition: background-color 0.2s;
 }
+
 .help-intro {
     margin-bottom: 12px;
     font-size: 14px;
     line-height: 1.4;
-    color: var(--text-secondary); /* #64748b */
+    color: var(--text-secondary);
 }
 
 .help-list {
-    margin: 0 0 12px 20px; /* Отступ слева для списка */
+    margin: 0 0 12px 20px;
     padding: 0;
     font-size: 14px;
     line-height: 1.6;
-    color: var(--text-color); /* #1e3a8a */
+    color: var(--text-color);
 }
 
 .help-list li {
-    margin-bottom: 6px; /* Расстояние между пунктами */
+    margin-bottom: 6px;
 }
 
 .help-action {
     font-size: 14px;
     line-height: 1.4;
-    color: var(--text-secondary); /* #64748b */
+    color: var(--text-secondary);
 }
 
 .help-action strong {
-    color: var(--primary-color); /* #2563eb */
+    color: var(--primary-color);
     font-weight: 600;
 }
+
 .create-btn {
     background-color: #1e3a8a;
     color: white;
@@ -506,6 +510,7 @@ textarea:focus {
 .create-btn:hover {
     background-color: #152d6e;
 }
+
 .cancel-btn {
     background-color: #ccc;
     color: #fff;
@@ -526,6 +531,21 @@ textarea:focus {
 
 .history-item:hover {
     background-color: var(--primary-color);
+}
+
+.chat-header {
+    background-color: var(--header-color); /* Новый цвет для header */
+    color: white;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chat-title-header {
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .chat-title {

@@ -4,18 +4,30 @@ from flask_login import LoginManager, UserMixin, login_required, current_user, l
 import smtplib
 from email.mime.text import MIMEText
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
 import datetime
 from random import randint
+from transformers import AutoModelForSeq2SeqLM, T5TokenizerFast, T5ForConditionalGeneration, T5Tokenizer
+import torch
+import os
+import nltk
+import re
+
 
 app = Flask(__name__, static_folder='static')
 
 app.config['SECRET_KEY'] = 'hardsecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dbase.db'
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 db = SQLAlchemy(app)
 
 IMAGES_FOLDER = os.path.join('static', 'img')
 app.config['UPLOAD_FOLDER'] = IMAGES_FOLDER
+
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+
+nltk.download('punkt', quiet=True)
+nltk.download('punkt_tab', quiet=True)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -74,7 +86,33 @@ def send_email(message, adress):
     except Exception as _ex:
         return f"{_ex}\nCheck your login or password please!"
 
+def correct_spelling(text, max_length=4000):
+    MODEL_NAME = 'UrukHan/t5-russian-spell'
 
+    # Загрузка модели и токенизатора
+    tokenizer = T5TokenizerFast.from_pretrained(MODEL_NAME)
+    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
+
+    # Подготовка входных данных
+    task_prefix = "Spell correct: "
+    input_sequences = [text] if type(text) != list else text
+
+    encoded = tokenizer(
+        [task_prefix + sequence for sequence in input_sequences],
+        padding="longest",
+        max_length=max_length,
+        truncation=True,
+        return_tensors="pt",
+    )
+
+    # Прогнозирование
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
+    predicts = model.generate(**encoded.to(device), max_length=max_length)
+
+    # Декодируем результат
+    results = tokenizer.batch_decode(predicts, skip_special_tokens=True)
+    return results[0] if isinstance(text, str) else results
 @app.route('/new_password', methods=['GET', 'POST'])
 def new_password():
     email = request.args.get('email')
@@ -137,11 +175,42 @@ def send():
     else:
         return render_template('check_email.html', flag=False, err="", email=email)
 
+def paraphrase_text(text, model, tokenizer, max_length=4000):
+    """Функция перефразирования текста"""
+    prompt = f"перефразируй: {text}"
 
+    # Токенизация и генерация
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt",
+        max_length=max_length,
+        truncation=True,
+        padding=True
+    ).to(model.device)
+
+    with torch.no_grad():
+        outputs = model.generate(
+            input_ids=inputs["input_ids"],
+            attention_mask=inputs["attention_mask"],
+            max_length=max_length,
+            num_beams=5,
+            do_sample=True,
+            temperature=1.5,
+            top_k=50,
+            top_p=0.95,
+            early_stopping=True
+        )
+
+    # Декодирование и очистка
+    decoded_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return clean_paraphrase_output(decoded_output)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
+def clean_paraphrase_output(text):
+    """Очистка выходного текста от лишних префиксов"""
+    text = re.sub(r'^(перефразируй:|перефразируя:|подробнее:|дополнительно:)\s*', '', text, flags=re.IGNORECASE)
+    return text.strip()
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -193,6 +262,20 @@ def login():
             return redirect(url_for('index'))
     return render_template('entrance.html', active_form='register')  # По умолчанию регистрация
 
+def load_paraphraser():
+    MODEL_PATH = "cointegrated/rut5-base-paraphraser"
+    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    print("Загружаем модель и токенизатор для перефразирования...")
+    try:
+        tokenizer = T5Tokenizer.from_pretrained(MODEL_PATH, legacy=True)
+        model = T5ForConditionalGeneration.from_pretrained(MODEL_PATH).to(DEVICE)
+        print(f"Модель для перефразирования успешно загружена на {DEVICE}")
+        return model, tokenizer
+    except Exception as e:
+        print(f"Ошибка при загрузке модели: {e}")
+        exit()
+
 
 @app.route('/main', methods=['GET', 'POST'])
 @login_required
@@ -210,6 +293,7 @@ def index():
         else:
             message_content = request.form['message'].strip()
 
+        # Проверка на пустое сообщение
         if not message_content:
             return redirect(url_for('index', chat_id=chat_id))
 
@@ -219,14 +303,24 @@ def index():
             db.session.commit()
             chat_id = new_chat.id
 
-        # Сохраняем сообщение пользователя
+        # Сохраняем сообщение пользователя сразу
         user_message = Message(
             chat_id=int(chat_id),
             content=message_content,
             is_user=True,
-            timestamp=datetime.datetime.utcnow()
+            timestamp=datetime.datetime.utcnow()  # Оставляем UTC, корректировка в шаблоне
         )
         db.session.add(user_message)
+
+        # Добавляем временное сообщение "Ожидайте..."
+        waiting_message = Message(
+            chat_id=int(chat_id),
+            content="Ожидайте...",
+            is_user=False,
+            timestamp=datetime.datetime.utcnow()
+        )
+        db.session.add(waiting_message)
+        db.session.commit()
 
         # Добавляем термины из сообщения пользователя
         words = [word for word in message_content.split() if len(word) > 3]
@@ -235,15 +329,23 @@ def index():
                 new_term = Term(user_id=current_user.id, term=word)
                 db.session.add(new_term)
 
-        # Автоматический ответ ИИ
+        # Обработка текста с помощью ИИ
+        corrected_text = correct_spelling(message_content)
+        paraphraser_model, paraphraser_tokenizer = load_paraphraser()
+        paraphrased_text = paraphrase_text(corrected_text, paraphraser_model, paraphraser_tokenizer)
+
+        # Удаляем временное сообщение
+        db.session.delete(waiting_message)
+
+        # Формируем и сохраняем ответ ИИ
+        ai_response = paraphrased_text
         ai_message = Message(
             chat_id=int(chat_id),
-            content="Это автоматический ответ ИИ. Здесь будет реальный ответ от вашего ИИ.",
+            content=ai_response,
             is_user=False,
             timestamp=datetime.datetime.utcnow()
         )
         db.session.add(ai_message)
-
         db.session.commit()
 
         return redirect(url_for('index', chat_id=chat_id))
@@ -262,7 +364,6 @@ def index():
                            chats=user_chats,
                            messages=messages,
                            current_chat_id=chat_id)
-
 @app.route('/favorite/<int:message_id>', methods=['POST'])
 @login_required
 def add_to_favorite(message_id):
