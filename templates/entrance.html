@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/entrance.css') }}">
+</head>
+<body>
+<input type="hidden" id="hidden_active_form" value="{{ active_form }}">
+    <div class="container" id="container" {% if active_form == 'login' %}class="container right-panel"{% endif %}>
+        <div class="liquid-container">
+            <div class="liquid" id="liquid"></div>
+        </div>
+
+        <div class="form-container">
+            <div class="form sign-up {% if active_form != 'login' %}active{% endif %}">
+                <h2>Регистрация</h2>
+                <form id="sign-up" method="post">
+                    <input type="hidden" name="form_type" value="register">
+                    <input type="text" name="name" placeholder="Имя" value="{{ name or '' }}">
+                    <input type="email" name="email" placeholder="Email" value="{{ email or '' }}">
+                    <input type="password" name="password" placeholder="Пароль" value="{{ password or '' }}">
+                    <input type="password" name="confirm_password" placeholder="Подтвердите пароль" value="{{ confirm_password or '' }}">
+                    <div class="button-container">
+                        <button name="btn_register" class="submit-btn" type="submit" onclick="updateContainerState('{{ active_form }}')">Зарегистрироваться</button>
+                        <button class="switch-btn" id="show-login-form">Уже есть аккаунт? Войти</button>
+                    </div>
+                    {% if register_errors %}
+                        <div class="error-message">{{ register_errors|join(', ') }}</div>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="form sign-in {% if active_form == 'login' %}active{% endif %}">
+                <h2>Авторизация</h2>
+                <form id="sign-in" method="post">
+                    <input type="hidden" name="form_type" value="login">
+                    <input type="email" name="email" id="login-email" placeholder="Email" value="{{ login_email or '' }}" required>
+                    <input type="password" name="password" id="login-password" placeholder="Пароль" value="{{ login_password or '' }}" required>
+                    <div class="button-container">
+                        <button name="btn_login" class="submit-btn large-btn" type="submit" onclick="updateContainerState('{{ active_form }}')">Войти</button>
+                        <div class="small-buttons">
+                            <button class="switch-btn small-btn" id="show-register-form">Нет аккаунта?</button>
+                            <button class="forgot-btn small-btn" type="button" onclick="location.href='{{ url_for('send', email=email, reset=1) }}'">Забыл пароль?</button>
+                        </div>
+                    </div>
+                    {% if login_errors %}
+                        <div class="error-message">{{ login_errors|join(', ') }}</div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/entrance.js') }}"></script>
+</body>
+</html>

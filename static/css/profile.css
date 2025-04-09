@@ -1,0 +1,443 @@
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --sidebar-color: #1e3a8a;
+    --bg-color: #f0f9ff;
+    --input-bg: #ffffff;
+    --border-color: #bfdbfe;
+    --text-color: #1e3a8a;
+    --text-secondary: #64748b;
+    --assistant-bg: #dbeafe;
+    --user-bg: #bfdbfe;
+    --like-color: #2563eb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(180deg, #2563eb, #1e3a8a);
+    color: var(--text-color);
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Пузырьки воздуха */
+.bubbles {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.bubble {
+    position: absolute;
+    bottom: -50px;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    animation: rise 5s infinite ease-in;
+}
+
+.bubble:nth-child(1) { left: 10%; animation-duration: 6s; }
+.bubble:nth-child(2) { left: 20%; width: 15px; height: 15px; animation-duration: 7s; animation-delay: 1s; }
+.bubble:nth-child(3) { left: 30%; width: 8px; height: 8px; animation-duration: 5s; animation-delay: 2s; }
+.bubble:nth-child(4) { left: 40%; width: 12px; height: 12px; animation-duration: 8s; animation-delay: 3s; }
+.bubble:nth-child(5) { left: 50%; width: 10px; height: 10px; animation-duration: 6s; animation-delay: 4s; }
+.bubble:nth-child(6) { left: 60%; animation-duration: 6s; }
+.bubble:nth-child(7) { left: 70%; width: 15px; height: 15px; animation-duration: 7s; animation-delay: 1s; }
+.bubble:nth-child(8) { left: 80%; width: 8px; height: 8px; animation-duration: 5s; animation-delay: 2s; }
+.bubble:nth-child(9) { left: 90%; width: 12px; height: 12px; animation-duration: 8s; animation-delay: 3s; }
+.bubble:nth-child(10) { left: 25%; width: 10px; height: 10px; animation-duration: 6s; animation-delay: 4s; }
+
+@keyframes rise {
+    0% { transform: translateY(0); opacity: 0.5; }
+    100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+/* Плавающие частицы */
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    animation: float 10s infinite ease-in-out;
+}
+
+.particle:nth-child(1) { left: 15%; top: 20%; animation-duration: 12s; animation-delay: 0s; }
+.particle:nth-child(2) { left: 35%; top: 50%; animation-duration: 8s; animation-delay: 2s; width: 8px; height: 8px; }
+.particle:nth-child(3) { left: 55%; top: 30%; animation-duration: 10s; animation-delay: 1s; }
+.particle:nth-child(4) { left: 75%; top: 70%; animation-duration: 9s; animation-delay: 3s; width: 5px; height: 5px; }
+.particle:nth-child(5) { left: 25%; top: 80%; animation-duration: 11s; animation-delay: 4s; }
+.particle:nth-child(6) { left: 45%; top: 10%; animation-duration: 7s; animation-delay: 5s; width: 7px; height: 7px; }
+.particle:nth-child(7) { left: 65%; top: 40%; animation-duration: 13s; animation-delay: 2.5s; }
+.particle:nth-child(8) { left: 85%; top: 60%; animation-duration: 8s; animation-delay: 1.5s; }
+
+/* Волны */
+.ocean {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 350px;
+    z-index: 1;
+}
+
+.wave {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTc0LjQ3MDY0IDQ2LjM0NTk0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9IndhdmUtZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjEwMCUiIHgyPSIwJSIgeTI9IjAlIj4KICAgICAgPHN0b3Agc3R5bGU9InN0b3AtY29sb3I6IzAwMDAzZjsiIG9mZnNldD0iMCIgaWQ9ImRlZXAtb2NlYW4iIC8+CiAgICAgIDxzdG9wIHN0eWxlPSJzdG9wLWNvbG9yOiM0ZTZmZmY7IiBvZmZzZXQ9IjEiIGlkPSJzaGFsbG93LW9jZWFuIiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHBhdGggc3R5bGU9ImZpbGw6dXJsKCN3YXZlLWdyYWRpZW50KTtmaWxsLXJ1bGU6ZXZlbm9kZCIgZD0ibSAwLDExLjM4NDQ4IGMgMCwwIDIxLjEzMzg1MSwxMS4zOTUzMSA0My42MTc2NjEsMTEuMzg0NDEgQyA2Ni4xMDE0NzEsMjIuNzU3OTkgMTA3Ljk2ODU2LDAuMDMyNjIgMTMwLjUwOCw3ZS01IGMgMjIuNTM5NDQsLTAuMDMyNSA0My45NjI2NCwxMS4zODQ0MSA0My45NjI2NCwxMS4zODQ0MSBWIDQ2LjM0NTk0IEggMCBaIiAvPgo8L3N2Zz4=");
+    background-repeat: repeat-x;
+    background-size: 500px auto;
+    background-position: bottom;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 350px;
+    animation: wave 5s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+    z-index: 1;
+}
+
+.wave:nth-of-type(2) {
+    opacity: 0.7;
+    animation: swell 5s ease -1.25s infinite, wave 5s cubic-bezier(0.36, 0.45, 0.63, 0.53) -.125s infinite;
+    z-index: 0;
+}
+
+@keyframes wave {
+    0% { background-position-x: 0%; }
+    100% { background-position-x: -500px; }
+}
+
+@keyframes swell {
+    0%, 100% { background-position: right bottom 10px; }
+    50% { background-position: right bottom 0; }
+}
+
+/* Контейнер */
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+    height: 80vh;
+    align-items: center;
+}
+
+.profile-section {
+    width: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-right: 30px;
+    color: white;
+    position: relative;
+    max-height: 60vh;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transition: color 0.3s;
+}
+
+.back-btn:hover {
+    color: var(--primary-hover);
+}
+
+.back-btn svg path {
+    stroke: white;
+}
+
+.back-btn:hover svg path {
+    stroke: var(--primary-hover);
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid var(--border-color);
+    margin: 50px auto 20px;
+    display: block;
+}
+
+.mini-profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    border: 2px solid var(--border-color);
+}
+
+.profile-info {
+    margin-top: 20px;
+}
+
+.profile-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+}
+
+.label {
+    font-weight: bold;
+    font-size: 16px;
+    color: #ffffff;
+    margin-right: 10px;
+}
+
+.value-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.value {
+    font-size: 16px;
+    color: white;
+    text-align: right;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 150px;
+}
+
+.email-value {
+    font-size: 16px;
+    color: white;
+    text-align: right;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s;
+}
+
+.edit-btn:hover {
+    transform: scale(1.1);
+}
+
+.edit-btn svg path {
+    stroke: #ffffff;
+}
+
+.edit-btn:hover svg path {
+    stroke: #e0e0e0;
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+    position: relative;
+}
+
+.modal-content h3 {
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.save-btn {
+    padding: 10px 20px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.save-btn:hover {
+    background: var(--primary-hover);
+}
+
+.cancel-btn {
+    padding: 10px 20px;
+    background: #ccc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.cancel-btn:hover {
+    background: #999;
+}
+
+.logout-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: all 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.lists-section {
+    flex: 1;
+    display: flex;
+    gap: 30px;
+}
+
+.list-container {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.list-title {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.random-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.random-list li {
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    background-color: var(--assistant-bg);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+    color: var(--text-secondary);
+}
+
+.random-list li:hover {
+    background-color: var(--user-bg);
+    transform: translateX(5px);
+}
+
+.message-text, .term-text {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.copy-btn, .remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s;
+}
+
+.copy-btn:hover, .remove-btn:hover {
+    transform: scale(1.1);
+}
+
+.copy-btn svg path, .remove-btn svg path {
+    stroke: var(--primary-color);
+}
+
+.profile-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+}
+
+.profile-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shark AI</title>
+    <link rel="stylesheet" href="../static/css/index.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="chat-container" id="chatContainer">
+            {% if not messages %}
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-logo">
+                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 1024.000000 1024.000000" preserveAspectRatio="xMidYMid meet">
+                        <g transform="translate(0.000000,1024.000000) scale(0.100000,-0.100000)" fill="#1e3a8a" stroke="none">
+                            <path d="M2575 7884 c-75 -8 -290 -46 -304 -53 -9 -6 1 -16 34 -36 95 -55 293 -212 391 -310 127 -126 217 -249 293 -395 100 -194 146 -361 156 -556 l5 -97 -108 -111 c-455 -470 -699 -1047 -737 -1741 l-7 -120 53 60 c90 104 370 377 459 449 127 101 307 218 433 280 101 50 230 105 217 93 -3 -3 -61 -49 -130 -102 -498 -390 -844 -758 -1119 -1192 -72 -114 -213 -373 -203 -373 3 0 26 13 51 29 218 137 617 380 708 430 230 126 481 227 743 299 224 61 227 59 45 -31 -293 -145 -562 -297 -830 -471 -66 -43 -122 -80 -123 -81 -7 -6 100 -157 172 -242 348 -415 836 -712 1364 -829 107 -23 133 -33 195 -74 156 -103 384 -200 509 -216 l53 -7 -18 24 c-34 48 -96 155 -112 192 -14 35 -14 37 2 37 10 0 133 9 273 21 437 35 548 28 679 -41 31 -17 126 -82 211 -146 378 -282 629 -425 905 -516 84 -27 244 -67 273 -68 7 0 -21 48 -61 107 -240 349 -379 702 -403 1024 -7 100 -1 123 111 385 158 369 337 693 598 1083 42 63 75 116 73 118 -8 8 -212 -74 -352 -142 -150 -73 -357 -204 -489 -310 -93 -74 -323 -285 -376 -343 -105 -117 -361 -370 -427 -423 -92 -74 -183 -125 -280 -157 -69 -23 -94 -26 -232 -26 -121 -1 -167 3 -211 16 l-56 18 63 157 c35 86 63 158 61 159 -2 2 -57 -12 -123 -32 -152 -45 -290 -78 -438 -104 -110 -20 -120 -20 -165 -5 -79 26 -211 114 -292 194 -159 160 -177 291 -61 457 126 178 345 324 623 415 l126 41 69 -27 c129 -51 222 -114 329 -220 71 -71 113 -123 144 -178 54 -95 107 -249 118 -337 l8 -64 69 79 c218 252 326 532 326 841 l0 113 58 17 c152 44 442 164 657 271 518 258 903 576 995 821 24 62 25 100 6 146 -40 97 -188 140 -481 139 -297 0 -492 -30 -1055 -159 -14 -3 29 25 95 61 405 227 812 336 1199 322 214 -8 323 -43 374 -120 24 -36 27 -50 26 -121 0 -59 -7 -101 -25 -153 -14 -39 -20 -69 -15 -66 38 21 159 129 234 208 176 183 320 397 472 700 139 278 210 484 210 613 0 59 -3 67 -33 97 -53 53 -228 97 -507 127 -189 20 -863 17 -1100 -5 -773 -72 -1395 -208 -2086 -458 l-191 -69 -108 80 c-399 297 -893 503 -1412 586 -95 15 -506 27 -598 18z m4268 -770 c-62 -73 -145 -141 -208 -170 -82 -39 -137 -32 -410 48 -77 22 -144 44 -148 48 -12 10 223 86 323 104 119 21 135 23 323 24 l169 2 -49 -56z m-2104 -739 c-22 -108 -25 -295 -5 -405 17 -96 55 -206 110 -325 25 -52 41 -95 36 -95 -15 0 -130 111 -174 169 -132 171 -152 361 -61 567 24 55 105 188 110 182 1 -2 -6 -43 -16 -93z"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="welcome-text">
+                    <h2>Привет! Меня зовут Shark AI</h2>
+                    <p>Чем я могу вам помочь?</p>
+                </div>
+            </div>
+            {% else %}
+            {% for message in messages %}
+<div class="message {% if message.is_user %}user-message{% else %}assistant-message{% endif %}" data-message-id="{{ message.id }}">
+    <div class="message-content">{{ message.content }}</div>
+    <div class="timestamp">{{ message.timestamp.strftime('%H:%M') }}</div>
+</div>
+{% if not message.is_user %}
+<div class="like-container" id="like-container-{{ message.id }}"></div>
+{% endif %}
+{% endfor %}
+            {% endif %}
+        </div>
+        <div class="ocean">
+            <div class="wave"></div>
+            <div class="wave"></div>
+        </div>
+        <div class="input-container">
+    <form method="POST" action="/main" class="input-area" enctype="multipart/form-data">
+        <input type="hidden" name="chat_id" value="{{ current_chat_id|default('new') }}">
+        <button type="button" class="help-input-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                <path d="M9.09 9C9.3251 8.33167 9.82115 7.76811 10.4765 7.40913C11.1319 7.05016 11.8997 6.91894 12.6447 7.03871C13.3897 7.15849 14.058 7.52152 14.5295 8.05553C15.001 8.58953 15.2413 9.25724 15.2 9.938C15.2 12 12 13 12 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+        <button type="button" class="attach-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 9h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <input type="file" id="fileInput" name="file" accept=".txt" style="display: none;">
+        <textarea name="message" id="userInput" placeholder="Напишите сообщение..." rows="1"></textarea>
+        <button type="submit" class="send-btn" id="sendBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12L21 12M21 12L13 4M21 12L13 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </form>
+</div>
+    </div>
+
+    <div class="sidebar">
+        <div class="logo">
+            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 1024.000000 1024.000000" preserveAspectRatio="xMidYMid meet">
+                <g transform="translate(0.000000,1024.000000) scale(0.100000,-0.100000)" fill="#ffffff" stroke="none">
+                    <path d="M2575 7884 c-75 -8 -290 -46 -304 -53 -9 -6 1 -16 34 -36 95 -55 293 -212 391 -310 127 -126 217 -249 293 -395 100 -194 146 -361 156 -556 l5 -97 -108 -111 c-455 -470 -699 -1047 -737 -1741 l-7 -120 53 60 c90 104 370 377 459 449 127 101 307 218 433 280 101 50 230 105 217 93 -3 -3 -61 -49 -130 -102 -498 -390 -844 -758 -1119 -1192 -72 -114 -213 -373 -203 -373 3 0 26 13 51 29 218 137 617 380 708 430 230 126 481 227 743 299 224 61 227 59 45 -31 -293 -145 -562 -297 -830 -471 -66 -43 -122 -80 -123 -81 -7 -6 100 -157 172 -242 348 -415 836 -712 1364 -829 107 -23 133 -33 195 -74 156 -103 384 -200 509 -216 l53 -7 -18 24 c-34 48 -96 155 -112 192 -14 35 -14 37 2 37 10 0 133 9 273 21 437 35 548 28 679 -41 31 -17 126 -82 211 -146 378 -282 629 -425 905 -516 84 -27 244 -67 273 -68 7 0 -21 48 -61 107 -240 349 -379 702 -403 1024 -7 100 -1 123 111 385 158 369 337 693 598 1083 42 63 75 116 73 118 -8 8 -212 -74 -352 -142 -150 -73 -357 -204 -489 -310 -93 -74 -323 -285 -376 -343 -105 -117 -361 -370 -427 -423 -92 -74 -183 -125 -280 -157 -69 -23 -94 -26 -232 -26 -121 -1 -167 3 -211 16 l-56 18 63 157 c35 86 63 158 61 159 -2 2 -57 -12 -123 -32 -152 -45 -290 -78 -438 -104 -110 -20 -120 -20 -165 -5 -79 26 -211 114 -292 194 -159 160 -177 291 -61 457 126 178 345 324 623 415 l126 41 69 -27 c129 -51 222 -114 329 -220 71 -71 113 -123 144 -178 54 -95 107 -249 118 -337 l8 -64 69 79 c218 252 326 532 326 841 l0 113 58 17 c152 44 442 164 657 271 518 258 903 576 995 821 24 62 25 100 6 146 -40 97 -188 140 -481 139 -297 0 -492 -30 -1055 -159 -14 -3 29 25 95 61 405 227 812 336 1199 322 214 -8 323 -43 374 -120 24 -36 27 -50 26 -121 0 -59 -7 -101 -25 -153 -14 -39 -20 -69 -15 -66 38 21 159 129 234 208 176 183 320 397 472 700 139 278 210 484 210 613 0 59 -3 67 -33 97 -53 53 -228 97 -507 127 -189 20 -863 17 -1100 -5 -773 -72 -1395 -208 -2086 -458 l-191 -69 -108 80 c-399 297 -893 503 -1412 586 -95 15 -506 27 -598 18z m4268 -770 c-62 -73 -145 -141 -208 -170 -82 -39 -137 -32 -410 48 -77 22 -144 44 -148 48 -12 10 223 86 323 104 119 21 135 23 323 24 l169 2 -49 -56z m-2104 -739 c-22 -108 -25 -295 -5 -405 17 -96 55 -206 110 -325 25 -52 41 -95 36 -95 -15 0 -130 111 -174 169 -132 171 -152 361 -61 567 24 55 105 188 110 182 1 -2 -6 -43 -16 -93z"/>
+                </g>
+            </svg>
+            Shark AI
+        </div>
+        <button class="new-chat-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4V20M4 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Новый чат
+        </button>
+        <ul class="history-list">
+            {% for chat in chats %}
+            <li class="history-item" data-chat-id="{{ chat.id }}">
+                <span class="chat-title">{{ chat.title }}</span>
+                <button class="edit-chat-btn" data-chat-id="{{ chat.id }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+                <button class="delete-chat-btn" data-chat-id="{{ chat.id }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="profile-separator"></div>
+        <a class="profile-link" href="{{ url_for('profile') }}"><div class="profile">
+            <div class="profile-icon">U</div>
+            <div class="profile-name">User</div>
+        </div></a>
+        <div class="bubbles">
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+        </div>
+    </div>
+    <div class="modal" id="newChatModal">
+        <div class="modal-content">
+            <h3>Создать новый чат</h3>
+            <input type="text" id="newChatTitle" placeholder="Введите название чата">
+            <div class="modal-buttons">
+                <button class="modal-btn create-btn" id="createChatBtn">Создать</button>
+                <button class="modal-btn cancel-btn" id="cancelChatBtn">Отмена</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="helpModal">
+    <div class="modal-content">
+        <h3>Инструкция по использованию</h3>
+        <p class="help-intro">Shark AI — ваш умный помощник. Вот что он умеет:</p>
+        <ul class="help-list">
+            <li>Отвечать на вопросы</li>
+            <li>Анализировать текст из файлов</li>
+            <li>Сохранять историю чатов</li>
+        </ul>
+        <p class="help-action">Введите сообщение или загрузите .txt файл и нажмите <strong>"Отправить"</strong>!</p>
+        <div class="modal-buttons">
+            <button class="modal-btn close-btn" id="closeHelpBtn">Закрыть</button>
+        </div>
+    </div>
+</div>
+    <script src="../static/js/index.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92d9cb7fdc7add25',t:'MTc0NDE5OTUxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>

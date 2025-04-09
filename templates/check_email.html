@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение почты</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/check_email.css') }}">
+</head>
+<body>
+    <div class="bubbles">
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+        <span class="bubble"></span>
+    </div>
+
+    <div class="particles">
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>Подтверждение почты</h2>
+            <form method="POST">
+                <div class="form-fields">
+                    <input type="email" name="mail" placeholder="Почта" value="{{ email }}" required>
+                    <input type="number" name="unik_cod" placeholder="Уникальный код" {% if flag != True %}style="display: none;"{% endif %}>
+                </div>
+                <div class="button-container">
+                    {% if flag == False %}
+                        <button class="submit-btn" name="send_code">Отправить код</button>
+                    {% elif flag == True %}
+                        <button class="submit-btn" name="send_code">Подтвердить</button>
+                    {% endif %}
+                </div>
+                {% if err %}
+                    <div class="error-message">{{ err }}</div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</body>
+</html>
