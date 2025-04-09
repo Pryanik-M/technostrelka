@@ -12,7 +12,25 @@
     --like-color: #2563eb;
     --header-color: #3b82f6; /* Новый цвет для header */
 }
+.like-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s;
+}
 
+.like-btn svg {
+    fill: #2563eb; /* Основной цвет иконки (синий из --primary-color) */
+}
+
+.like-btn.active svg {
+    fill: #1d4ed8; /* Цвет заливки при нажатии (темнее, из --primary-hover) */
+}
+
+.like-btn:hover {
+    transform: scale(1.1);
+}
 * {
     margin: 0;
     padding: 0;
@@ -146,7 +164,6 @@ body {
     gap: 12px;
     position: relative;
     z-index: 1;
-    padding-top: 20px; /* Добавляем отступ сверху в 20px */
 }
 
 .welcome-screen {

@@ -394,11 +394,10 @@ body {
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     transition: all 0.3s;
     color: var(--text-secondary);
 }
-
 .random-list li:hover {
     background-color: var(--user-bg);
     transform: translateX(5px);
@@ -411,6 +410,8 @@ body {
 
 .action-buttons {
     display: flex;
+    flex-direction: row;
+    align-items: center;
     gap: 8px;
 }
 
@@ -420,6 +421,9 @@ body {
     cursor: pointer;
     padding: 4px;
     transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .copy-btn:hover, .remove-btn:hover {
